@@ -1,0 +1,345 @@
+Ghost Portal Cartographer independent local audit
+Python 3.15.2
+.gitignore: OK
+.zenodo.json: OK
+BENCHMARK_DATA.csv: OK
+CITATION.cff: OK
+FORMAL_SPECIFICATION.md: OK
+GPC_Conceptual_Cover.png: OK
+GPC_Research_Paper.pdf: OK
+GPC_Research_Paper.tex: OK
+GPC_Research_Paper.txt: OK
+LICENSE: OK
+MUTATION_RESULTS.json: OK
+README.md: OK
+RELEASE_NOTES.md: OK
+REPRODUCIBILITY.md: OK
+RUN_AUDIT.sh: OK
+SECURITY_MODEL.md: OK
+benchmark.py: OK
+gpc.py: OK
+independent_oracle.py: OK
+independent_oracle_raw.py: OK
+mutation_check.py: OK
+run_demo.py: OK
+synthetic_example.json: OK
+test_gpc.py: OK
+test_01_direct_ordered (test_gpc.BasicPathTests.test_01_direct_ordered) ... ok
+test_02_multi_hop_ordered (test_gpc.BasicPathTests.test_02_multi_hop_ordered) ... ok
+test_03_direct_possible (test_gpc.BasicPathTests.test_03_direct_possible) ... ok
+test_04_unknown_content_possible (test_gpc.BasicPathTests.test_04_unknown_content_possible) ... ok
+test_05_control_not_data (test_gpc.BasicPathTests.test_05_control_not_data) ... ok
+test_06_missing_evidence_only_possible (test_gpc.BasicPathTests.test_06_missing_evidence_only_possible) ... ok
+test_07_blank_evidence_only_possible (test_gpc.BasicPathTests.test_07_blank_evidence_only_possible) ... ok
+test_08_missing_sequence_reported (test_gpc.BasicPathTests.test_08_missing_sequence_reported) ... ok
+test_09_sequence_inversion_reported (test_gpc.BasicPathTests.test_09_sequence_inversion_reported) ... ok
+test_10_equal_sequence_reported (test_gpc.BasicPathTests.test_10_equal_sequence_reported) ... ok
+test_11_zero_sequence_is_valid (test_gpc.BasicPathTests.test_11_zero_sequence_is_valid) ... ok
+test_12_reported_path_over_possible (test_gpc.BasicPathTests.test_12_reported_path_over_possible) ... ok
+test_13_ordered_path_over_reported (test_gpc.BasicPathTests.test_13_ordered_path_over_reported) ... ok
+test_14_distinct_artifact_identity_required (test_gpc.BasicPathTests.test_14_distinct_artifact_identity_required) ... ok
+test_15_multiple_same_domain_sinks (test_gpc.BasicPathTests.test_15_multiple_same_domain_sinks) ... ok
+test_16_cycle_terminates (test_gpc.BasicPathTests.test_16_cycle_terminates) ... ok
+test_17_unreachable_cycle_terminates (test_gpc.BasicPathTests.test_17_unreachable_cycle_terminates) ... ok
+test_18_self_loop_only_not_target (test_gpc.BasicPathTests.test_18_self_loop_only_not_target) ... ok
+test_19_target_domain_only (test_gpc.BasicPathTests.test_19_target_domain_only) ... ok
+test_20_log_telemetry_memory_cache_integrations (test_gpc.BasicPathTests.test_20_log_telemetry_memory_cache_integrations) ... ok
+test_21_backup_and_trace_supported (test_gpc.BasicPathTests.test_21_backup_and_trace_supported) ... ok
+test_22_policy_does_not_change_search (test_gpc.BasicPathTests.test_22_policy_does_not_change_search) ... ok
+test_23_category_affects_policy_not_path (test_gpc.BasicPathTests.test_23_category_affects_policy_not_path) ... ok
+test_24_no_route_not_proof_safe (test_gpc.BasicPathTests.test_24_no_route_not_proof_safe) ... ok
+test_25_input_provenance_not_authenticated (test_gpc.BasicPathTests.test_25_input_provenance_not_authenticated) ... ok
+test_26_synthetic_fixture_exact_path (test_gpc.BasicPathTests.test_26_synthetic_fixture_exact_path) ... ok
+test_27_fixture_without_observed_vendor (test_gpc.BasicPathTests.test_27_fixture_without_observed_vendor) ... ok
+test_28_fixture_without_both_vendor (test_gpc.BasicPathTests.test_28_fixture_without_both_vendor) ... ok
+test_29_fixture_inverted_vendor_order (test_gpc.BasicPathTests.test_29_fixture_inverted_vendor_order) ... ok
+test_30_two_paths_choose_shortest_hops (test_gpc.BasicPathTests.test_30_two_paths_choose_shortest_hops) ... ok
+test_31_original_suppression_regression (test_gpc.BudgetTests.test_31_original_suppression_regression) ... ok
+test_32_hundred_thousand_noise_nodes (test_gpc.BudgetTests.test_32_hundred_thousand_noise_nodes) ... ok
+test_33_unordered_survives_ordered_budget (test_gpc.BudgetTests.test_33_unordered_survives_ordered_budget) ... ok
+test_34_possible_survives_reported_limit (test_gpc.BudgetTests.test_34_possible_survives_reported_limit) ... ok
+test_35_none_found_budget_unknown (test_gpc.BudgetTests.test_35_none_found_budget_unknown) ... ok
+test_36_empty_graph_budget_one_decisive (test_gpc.BudgetTests.test_36_empty_graph_budget_one_decisive) ... ok
+test_37_budget_equals_required_pops (test_gpc.BudgetTests.test_37_budget_equals_required_pops) ... ok
+test_38_budget_one_no_premature_witness (test_gpc.BudgetTests.test_38_budget_one_no_premature_witness) ... ok
+test_39_positive_result_counts_exact (test_gpc.BudgetTests.test_39_positive_result_counts_exact) ... ok
+test_40_limit_counts_exact_not_claimed_max (test_gpc.BudgetTests.test_40_limit_counts_exact_not_claimed_max) ... ok
+test_41_limits_independent (test_gpc.BudgetTests.test_41_limits_independent) ... ok
+test_42_control_only_no_budget_noise (test_gpc.BudgetTests.test_42_control_only_no_budget_noise) ... ok
+test_43_exhaustion_not_same_as_coverage_complete (test_gpc.BudgetTests.test_43_exhaustion_not_same_as_coverage_complete) ... ok
+test_44_budget_zero_rejected (test_gpc.BudgetTests.test_44_budget_zero_rejected) ... ok
+test_45_boolean_budget_rejected (test_gpc.BudgetTests.test_45_boolean_budget_rejected) ... ok
+test_46_fractional_budget_rejected (test_gpc.BudgetTests.test_46_fractional_budget_rejected) ... ok
+test_114_unsigned_declassification_still_possible (test_gpc.DeclassificationTests.test_114_unsigned_declassification_still_possible) ... ok
+test_115_good_mac_authenticates_metadata_but_does_not_suppress (test_gpc.DeclassificationTests.test_115_good_mac_authenticates_metadata_but_does_not_suppress) ... ok
+test_116_tampered_mac_does_not_authenticate (test_gpc.DeclassificationTests.test_116_tampered_mac_does_not_authenticate) ... ok
+test_117_wrong_policy (test_gpc.DeclassificationTests.test_117_wrong_policy) ... ok
+test_118_wrong_category (test_gpc.DeclassificationTests.test_118_wrong_category) ... ok
+test_119_wrong_transform (test_gpc.DeclassificationTests.test_119_wrong_transform) ... ok
+test_120_wrong_digest_on_node (test_gpc.DeclassificationTests.test_120_wrong_digest_on_node) ... ok
+test_121_expired_claim (test_gpc.DeclassificationTests.test_121_expired_claim) ... ok
+test_122_missing_verification_epoch (test_gpc.DeclassificationTests.test_122_missing_verification_epoch) ... ok
+test_123_untrusted_signer (test_gpc.DeclassificationTests.test_123_untrusted_signer) ... ok
+test_124_duplicate_nonce (test_gpc.DeclassificationTests.test_124_duplicate_nonce) ... ok
+test_125_different_category_never_suppressed (test_gpc.DeclassificationTests.test_125_different_category_never_suppressed) ... ok
+test_126_inferred_declassified_edge_still_possible (test_gpc.DeclassificationTests.test_126_inferred_declassified_edge_still_possible) ... ok
+test_127_json_claim_roundtrip (test_gpc.DeclassificationTests.test_127_json_claim_roundtrip) ... ok
+test_128_missing_claim_field_is_clean_value_error (test_gpc.DeclassificationTests.test_128_missing_claim_field_is_clean_value_error) ... ok
+test_129_invalid_mac_type_is_clean_value_error (test_gpc.DeclassificationTests.test_129_invalid_mac_type_is_clean_value_error) ... ok
+test_130_tampered_claim_does_not_authenticate (test_gpc.DeclassificationTests.test_130_tampered_claim_does_not_authenticate) ... ok
+test_131_valid_mac_does_not_erase_alternate_route (test_gpc.DeclassificationTests.test_131_valid_mac_does_not_erase_alternate_route) ... ok
+test_132_false_digest_rejected_cleanly (test_gpc.DeclassificationTests.test_132_false_digest_rejected_cleanly) ... ok
+test_133_wrong_key_detected (test_gpc.DeclassificationTests.test_133_wrong_key_detected) ... ok
+test_134_boolean_verification_epoch_rejected (test_gpc.DeclassificationTests.test_134_boolean_verification_epoch_rejected) ... ok
+test_135_result_has_zero_production_cryptographic_claims (test_gpc.DeclassificationTests.test_135_result_has_zero_production_cryptographic_claims) ... ok
+test_136_untrusted_key_is_not_in_serialized_output (test_gpc.DeclassificationTests.test_136_untrusted_key_is_not_in_serialized_output) ... ok
+test_137_declared_node_digest_is_not_verified_from_bytes (test_gpc.DeclassificationTests.test_137_declared_node_digest_is_not_verified_from_bytes) ... ok
+test_138_duplicate_claim_same_nonce_order_deterministic (test_gpc.DeclassificationTests.test_138_duplicate_claim_same_nonce_order_deterministic) ... ok
+test_102_causal_parent_match_does_not_upgrade_sequence (test_gpc.DistributedContextTests.test_102_causal_parent_match_does_not_upgrade_sequence) ... ok
+test_103_false_parent_does_not_upgrade (test_gpc.DistributedContextTests.test_103_false_parent_does_not_upgrade) ... ok
+test_104_matching_trace_parent_is_only_reported (test_gpc.DistributedContextTests.test_104_matching_trace_parent_is_only_reported) ... ok
+test_105_trace_scope_mismatch_detected (test_gpc.DistributedContextTests.test_105_trace_scope_mismatch_detected) ... ok
+test_106_trace_parent_without_previous_span (test_gpc.DistributedContextTests.test_106_trace_parent_without_previous_span) ... ok
+test_107_invalid_trace_id_rejected (test_gpc.DistributedContextTests.test_107_invalid_trace_id_rejected) ... ok
+test_108_invalid_span_rejected (test_gpc.DistributedContextTests.test_108_invalid_span_rejected) ... ok
+test_109_orphan_parent_span_rejected (test_gpc.DistributedContextTests.test_109_orphan_parent_span_rejected) ... ok
+test_110_invalid_claimed_parent_rejected (test_gpc.DistributedContextTests.test_110_invalid_claimed_parent_rejected) ... ok
+test_111_parentage_never_authenticates_provenance (test_gpc.DistributedContextTests.test_111_parentage_never_authenticates_provenance) ... ok
+test_112_missing_sequence_parentage_preserves_reported (test_gpc.DistributedContextTests.test_112_missing_sequence_parentage_preserves_reported) ... ok
+test_113_trace_metadata_alone_not_edge (test_gpc.DistributedContextTests.test_113_trace_metadata_alone_not_edge) ... ok
+test_139_declassified_edges_remain_in_all_eligible_relations (test_gpc.ExtendedOracleTests.test_139_declassified_edges_remain_in_all_eligible_relations) ... ok
+test_140_all_declassification_attestations_are_observational (test_gpc.ExtendedOracleTests.test_140_all_declassification_attestations_are_observational) ... ok
+test_141_reproduced_parent_edge_never_upgrades_inverted_order (test_gpc.ExternalReviewPrecisionTests.test_141_reproduced_parent_edge_never_upgrades_inverted_order) ... ok
+test_142_reported_span_parent_never_upgrades_inverted_order (test_gpc.ExternalReviewPrecisionTests.test_142_reported_span_parent_never_upgrades_inverted_order) ... ok
+test_143_claimed_edge_parent_has_precedence_over_span_context (test_gpc.ExternalReviewPrecisionTests.test_143_claimed_edge_parent_has_precedence_over_span_context) ... ok
+test_144_hmac_trust_missing_is_unverified_and_route_preserved (test_gpc.ExternalReviewPrecisionTests.test_144_hmac_trust_missing_is_unverified_and_route_preserved) ... ok
+test_145_hmac_nonce_scope_is_per_analysis_call (test_gpc.ExternalReviewPrecisionTests.test_145_hmac_nonce_scope_is_per_analysis_call) ... ok
+test_146_declassified_and_data_equal_for_all_three_relations (test_gpc.ExternalReviewPrecisionTests.test_146_declassified_and_data_equal_for_all_three_relations) ... ok
+test_147_nonce_duplicate_diagnostic_on_second_edge_only (test_gpc.ExternalReviewPrecisionTests.test_147_nonce_duplicate_diagnostic_on_second_edge_only) ... ok
+test_100_reordering_input_deterministic (test_gpc.OracleTests.test_100_reordering_input_deterministic) ... ok
+test_101_all_statuses_have_no_authentication_claim (test_gpc.OracleTests.test_101_all_statuses_have_no_authentication_claim) ... ok
+test_91_independent_dfs_oracle_1200_random_graphs (test_gpc.OracleTests.test_91_independent_dfs_oracle_1200_random_graphs) ... ok
+test_92_independent_raw_oracle_1200_random_graphs (test_gpc.OracleTests.test_92_independent_raw_oracle_1200_random_graphs) ... ok
+test_93_exhaustive_three_vertex_possible_graphs (test_gpc.OracleTests.test_93_exhaustive_three_vertex_possible_graphs) ... ok
+test_94_exhaustive_three_vertex_observation_mappings (test_gpc.OracleTests.test_94_exhaustive_three_vertex_observation_mappings) ... ok
+test_95_possible_edge_monotonicity_500_cases (test_gpc.OracleTests.test_95_possible_edge_monotonicity_500_cases) ... ok
+test_96_reported_edge_monotonicity_250_cases (test_gpc.OracleTests.test_96_reported_edge_monotonicity_250_cases) ... ok
+test_97_ordered_edge_monotonicity_250_cases (test_gpc.OracleTests.test_97_ordered_edge_monotonicity_250_cases) ... ok
+test_98_ordered_implies_reported_implies_possible (test_gpc.OracleTests.test_98_ordered_implies_reported_implies_possible) ... ok
+test_99_result_priority_random_budgets (test_gpc.OracleTests.test_99_result_priority_random_budgets) ... ok
+test_47_destination_denied_separate (test_gpc.PolicyAndCoverageTests.test_47_destination_denied_separate) ... ok
+test_48_destination_permitted_separate (test_gpc.PolicyAndCoverageTests.test_48_destination_permitted_separate) ... ok
+test_49_destination_unspecified (test_gpc.PolicyAndCoverageTests.test_49_destination_unspecified) ... ok
+test_50_intermediate_denied_detected (test_gpc.PolicyAndCoverageTests.test_50_intermediate_denied_detected) ... ok
+test_51_unspecified_intermediate_not_permitted (test_gpc.PolicyAndCoverageTests.test_51_unspecified_intermediate_not_permitted) ... ok
+test_52_destination_denied_path (test_gpc.PolicyAndCoverageTests.test_52_destination_denied_path) ... ok
+test_53_no_path_policy_not_evaluated (test_gpc.PolicyAndCoverageTests.test_53_no_path_policy_not_evaluated) ... ok
+test_54_path_hop_record_order (test_gpc.PolicyAndCoverageTests.test_54_path_hop_record_order) ... ok
+test_55_declared_coverage_gaps_observed (test_gpc.PolicyAndCoverageTests.test_55_declared_coverage_gaps_observed) ... ok
+test_56_declared_coverage_gaps_possible_only (test_gpc.PolicyAndCoverageTests.test_56_declared_coverage_gaps_possible_only) ... ok
+test_57_unpopped_coverage_not_claimed (test_gpc.PolicyAndCoverageTests.test_57_unpopped_coverage_not_claimed) ... ok
+test_58_no_external_visibility_percentage (test_gpc.PolicyAndCoverageTests.test_58_no_external_visibility_percentage) ... ok
+test_59_frozen_result (test_gpc.PolicyAndCoverageTests.test_59_frozen_result) ... ok
+test_60_serialized_result_contains_all_three (test_gpc.PolicyAndCoverageTests.test_60_serialized_result_contains_all_three) ... ok
+test_61_duplicate_node_rejected (test_gpc.SchemaTests.test_61_duplicate_node_rejected) ... ok
+test_62_duplicate_edge_rejected (test_gpc.SchemaTests.test_62_duplicate_edge_rejected) ... ok
+test_63_dangling_edge_rejected (test_gpc.SchemaTests.test_63_dangling_edge_rejected) ... ok
+test_64_invalid_surface_rejected (test_gpc.SchemaTests.test_64_invalid_surface_rejected) ... ok
+test_65_invalid_coverage_rejected (test_gpc.SchemaTests.test_65_invalid_coverage_rejected) ... ok
+test_66_empty_node_id_rejected (test_gpc.SchemaTests.test_66_empty_node_id_rejected) ... ok
+test_67_unhashable_node_id_rejected_cleanly (test_gpc.SchemaTests.test_67_unhashable_node_id_rejected_cleanly) ... ok
+test_68_unhashable_edge_id_rejected_cleanly (test_gpc.SchemaTests.test_68_unhashable_edge_id_rejected_cleanly) ... ok
+test_69_boolean_sequence_rejected (test_gpc.SchemaTests.test_69_boolean_sequence_rejected) ... ok
+test_70_negative_sequence_rejected (test_gpc.SchemaTests.test_70_negative_sequence_rejected) ... ok
+test_71_fractional_sequence_rejected (test_gpc.SchemaTests.test_71_fractional_sequence_rejected) ... ok
+test_72_evidence_object_rejected (test_gpc.SchemaTests.test_72_evidence_object_rejected) ... ok
+test_73_bad_mode_rejected (test_gpc.SchemaTests.test_73_bad_mode_rejected) ... ok
+test_74_bad_flow_rejected (test_gpc.SchemaTests.test_74_bad_flow_rejected) ... ok
+test_75_policy_invalid_value (test_gpc.SchemaTests.test_75_policy_invalid_value) ... ok
+test_76_policy_bad_key (test_gpc.SchemaTests.test_76_policy_bad_key) ... ok
+test_77_missing_json_nodes (test_gpc.SchemaTests.test_77_missing_json_nodes) ... ok
+test_78_missing_json_policy_decision (test_gpc.SchemaTests.test_78_missing_json_policy_decision) ... ok
+test_79_missing_json_edge_id (test_gpc.SchemaTests.test_79_missing_json_edge_id) ... ok
+test_80_unrecognized_json_field (test_gpc.SchemaTests.test_80_unrecognized_json_field) ... ok
+test_81_conflicting_policy_entries (test_gpc.SchemaTests.test_81_conflicting_policy_entries) ... ok
+test_82_duplicate_same_policy_entries (test_gpc.SchemaTests.test_82_duplicate_same_policy_entries) ... ok
+test_83_malformed_top_level (test_gpc.SchemaTests.test_83_malformed_top_level) ... ok
+test_84_malformed_node_list (test_gpc.SchemaTests.test_84_malformed_node_list) ... ok
+test_85_same_domain_query_rejected (test_gpc.SchemaTests.test_85_same_domain_query_rejected) ... ok
+test_86_missing_source_query_rejected (test_gpc.SchemaTests.test_86_missing_source_query_rejected) ... ok
+test_87_non_string_category_rejected (test_gpc.SchemaTests.test_87_non_string_category_rejected) ... ok
+test_88_whitespace_destination_rejected (test_gpc.SchemaTests.test_88_whitespace_destination_rejected) ... ok
+test_89_empty_policy_domain_rejected (test_gpc.SchemaTests.test_89_empty_policy_domain_rejected) ... ok
+test_90_input_is_metadata_only (test_gpc.SchemaTests.test_90_input_is_metadata_only) ... ok
+test_148_order_issues_describe_selected_path_only (test_gpc.SelectionBindingAndBoundaryTests.test_148_order_issues_describe_selected_path_only) ... ok
+test_149_returned_reported_witness_reverified_as_ordered (test_gpc.SelectionBindingAndBoundaryTests.test_149_returned_reported_witness_reverified_as_ordered) ... ok
+test_150_unordered_reported_witness_not_upgraded (test_gpc.SelectionBindingAndBoundaryTests.test_150_unordered_reported_witness_not_upgraded) ... ok
+test_151_witness_reverification_predicates (test_gpc.SelectionBindingAndBoundaryTests.test_151_witness_reverification_predicates) ... ok
+test_152_exhaustive_negative_possible_search_is_decisive (test_gpc.SelectionBindingAndBoundaryTests.test_152_exhaustive_negative_possible_search_is_decisive) ... ok
+test_153_capped_possible_search_still_unknown (test_gpc.SelectionBindingAndBoundaryTests.test_153_capped_possible_search_still_unknown) ... ok
+test_154_all_zero_trace_id_rejected (test_gpc.SelectionBindingAndBoundaryTests.test_154_all_zero_trace_id_rejected) ... ok
+test_155_all_zero_span_and_parent_rejected (test_gpc.SelectionBindingAndBoundaryTests.test_155_all_zero_span_and_parent_rejected) ... ok
+test_156_claim_transplanted_to_other_artifacts_fails (test_gpc.SelectionBindingAndBoundaryTests.test_156_claim_transplanted_to_other_artifacts_fails) ... ok
+test_157_claim_bound_to_destination_domain (test_gpc.SelectionBindingAndBoundaryTests.test_157_claim_bound_to_destination_domain) ... ok
+test_158_unhashable_endpoint_is_value_error (test_gpc.SelectionBindingAndBoundaryTests.test_158_unhashable_endpoint_is_value_error) ... ok
+test_159_mac_checked_before_field_reasons (test_gpc.SelectionBindingAndBoundaryTests.test_159_mac_checked_before_field_reasons) ... ok
+test_160_malformed_claim_rejects_whole_input (test_gpc.SelectionBindingAndBoundaryTests.test_160_malformed_claim_rejects_whole_input) ... ok
+test_161_equal_sequence_flagged_non_increasing (test_gpc.SelectionBindingAndBoundaryTests.test_161_equal_sequence_flagged_non_increasing) ... ok
+test_162_annotation_positions_start_at_one (test_gpc.SelectionBindingAndBoundaryTests.test_162_annotation_positions_start_at_one) ... ok
+test_163_validity_window_bounds_inclusive (test_gpc.SelectionBindingAndBoundaryTests.test_163_validity_window_bounds_inclusive) ... ok
+test_164_claim_window_and_digest_validation (test_gpc.SelectionBindingAndBoundaryTests.test_164_claim_window_and_digest_validation) ... ok
+test_165_parent_span_requires_trace_and_span (test_gpc.SelectionBindingAndBoundaryTests.test_165_parent_span_requires_trace_and_span) ... ok
+test_166_trust_configuration_boundaries (test_gpc.SelectionBindingAndBoundaryTests.test_166_trust_configuration_boundaries) ... ok
+test_167_short_identifier_limits (test_gpc.SelectionBindingAndBoundaryTests.test_167_short_identifier_limits) ... ok
+test_168_policy_entry_requires_category_and_domain (test_gpc.SelectionBindingAndBoundaryTests.test_168_policy_entry_requires_category_and_domain) ... ok
+test_169_nodes_and_edges_must_be_sequences (test_gpc.SelectionBindingAndBoundaryTests.test_169_nodes_and_edges_must_be_sequences) ... ok
+test_170_claim_only_on_declassified_edge (test_gpc.SelectionBindingAndBoundaryTests.test_170_claim_only_on_declassified_edge) ... ok
+test_171_witness_source_reported_without_reclassification (test_gpc.SelectionBindingAndBoundaryTests.test_171_witness_source_reported_without_reclassification) ... ok
+
+----------------------------------------------------------------------
+Ran 171 tests in 0.537s
+
+OK
+{
+  "causal_annotations": [
+    {
+      "claim": "NO_PARENT_CLAIM",
+      "claimed_parent_edge_id": null,
+      "edge_id": "e1",
+      "position": 1,
+      "previous_edge_id": null,
+      "provenance_trust": "unauthenticated"
+    },
+    {
+      "claim": "NO_PARENT_CLAIM",
+      "claimed_parent_edge_id": null,
+      "edge_id": "e2",
+      "position": 2,
+      "previous_edge_id": "e1",
+      "provenance_trust": "unauthenticated"
+    },
+    {
+      "claim": "NO_PARENT_CLAIM",
+      "claimed_parent_edge_id": null,
+      "edge_id": "e3",
+      "position": 3,
+      "previous_edge_id": "e2",
+      "provenance_trust": "unauthenticated"
+    }
+  ],
+  "caveat": "The input reports reference-backed, scalar-ordered lineage; neither provenance authenticity nor sensitive-byte transfer is established. Authenticated transformation METADATA is not proof of semantic sanitization; declassified edges remain traversable.",
+  "declared_coverage_gap_nodes": [
+    "cache_entry_v1",
+    "collector_batch_v1",
+    "memory_frame_v1",
+    "request_v1",
+    "vendor_archive_v1"
+  ],
+  "declassification_assessments": [],
+  "examined_states": 14,
+  "ordered": {
+    "declared_coverage_gaps": [
+      "collector_batch_v1",
+      "request_v1",
+      "vendor_archive_v1"
+    ],
+    "discovered_states": 4,
+    "examined_states": 4,
+    "exhaustive": false,
+    "limit_reached": false,
+    "path": [
+      "e1",
+      "e2",
+      "e3"
+    ],
+    "relation": "ordered",
+    "resolved": true
+  },
+  "path": [
+    "e1",
+    "e2",
+    "e3"
+  ],
+  "policy": "DENIED",
+  "policy_hops": [
+    {
+      "decision": "UNSPECIFIED",
+      "domain": "application",
+      "node_id": "exception_log_v1"
+    },
+    {
+      "decision": "UNSPECIFIED",
+      "domain": "observability",
+      "node_id": "collector_batch_v1"
+    },
+    {
+      "decision": "DENIED",
+      "domain": "external_vendor",
+      "node_id": "vendor_archive_v1"
+    }
+  ],
+  "policy_path_status": "CONTAINS_DENIED",
+  "possible": {
+    "declared_coverage_gaps": [
+      "cache_entry_v1",
+      "collector_batch_v1",
+      "memory_frame_v1",
+      "request_v1",
+      "vendor_archive_v1"
+    ],
+    "discovered_states": 7,
+    "examined_states": 6,
+    "exhaustive": false,
+    "limit_reached": false,
+    "path": [
+      "e1",
+      "e2",
+      "e3"
+    ],
+    "relation": "possible",
+    "resolved": true
+  },
+  "provenance_trust": "unauthenticated",
+  "reported": {
+    "declared_coverage_gaps": [
+      "collector_batch_v1",
+      "request_v1",
+      "vendor_archive_v1"
+    ],
+    "discovered_states": 4,
+    "examined_states": 4,
+    "exhaustive": false,
+    "limit_reached": false,
+    "path": [
+      "e1",
+      "e2",
+      "e3"
+    ],
+    "relation": "reported",
+    "resolved": true
+  },
+  "reported_path_order_issues": [],
+  "status": "REPORTED_ORDERED_LINEAGE",
+  "witness_reclassified": false,
+  "witness_source": "ordered"
+}
+budget_overrides_positive: KILLED (failures=2)
+ignore_sequence_inversion: KILLED (failures=16)
+collapsing_ordered_state: KILLED (failures=19)
+unauthenticated_parent_falsely_upgrades: KILLED (failures=5)
+drop_unverified_declassification: KILLED (failures=31)
+accept_no_evidence: KILLED (failures=5)
+reverification_skips_order_check: KILLED (failures=12)
+negative_possible_search_not_decisive: KILLED (failures=2)
+claim_not_bound_to_artifacts: KILLED (failures=13)
+diagnostics_on_reported_search_path: KILLED (failures=1)
+accept_all_zero_trace_id: KILLED (failures=1)
+line    250 nodes=   252 edges=    250 elapsed=0.0052s peak=194.4KiB
+line   1000 nodes=  1002 edges=   1000 elapsed=0.0197s peak=729.4KiB
+line   3000 nodes=  3002 edges=   3000 elapsed=0.0608s peak=2360.1KiB
+star    250 nodes=   252 edges=    250 elapsed=0.0026s peak=153.5KiB
+star   1000 nodes=  1002 edges=   1000 elapsed=0.0080s peak=608.1KiB
+star   3000 nodes=  3002 edges=   3000 elapsed=0.0233s peak=2008.5KiB
+dense    30 nodes=    32 edges=    930 elapsed=0.0097s peak=272.9KiB
+dense    60 nodes=    62 edges=   3660 elapsed=0.0348s peak=1049.7KiB
+dense   120 nodes=   122 edges=  14520 elapsed=0.1340s peak=4130.2KiB

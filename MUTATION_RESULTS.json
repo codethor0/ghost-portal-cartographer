@@ -1,0 +1,57 @@
+[
+  {
+    "mutant": "budget_overrides_positive",
+    "killed": true,
+    "details": "failures=2"
+  },
+  {
+    "mutant": "ignore_sequence_inversion",
+    "killed": true,
+    "details": "failures=16"
+  },
+  {
+    "mutant": "collapsing_ordered_state",
+    "killed": true,
+    "details": "failures=19"
+  },
+  {
+    "mutant": "unauthenticated_parent_falsely_upgrades",
+    "killed": true,
+    "details": "failures=5"
+  },
+  {
+    "mutant": "drop_unverified_declassification",
+    "killed": true,
+    "details": "failures=31"
+  },
+  {
+    "mutant": "accept_no_evidence",
+    "killed": true,
+    "details": "failures=5"
+  },
+  {
+    "mutant": "reverification_skips_order_check",
+    "killed": true,
+    "details": "failures=12"
+  },
+  {
+    "mutant": "negative_possible_search_not_decisive",
+    "killed": true,
+    "details": "failures=2"
+  },
+  {
+    "mutant": "claim_not_bound_to_artifacts",
+    "killed": true,
+    "details": "failures=12"
+  },
+  {
+    "mutant": "diagnostics_on_reported_search_path",
+    "killed": true,
+    "details": "failures=1"
+  },
+  {
+    "mutant": "accept_all_zero_trace_id",
+    "killed": true,
+    "details": "failures=1"
+  }
+]

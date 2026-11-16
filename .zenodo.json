@@ -1,0 +1,35 @@
+{
+  "title": "Ghost Portal Cartographer: Evidence-Tiered Mapping of Indirect Sensitive-Data Egress",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Thor, Thor",
+      "affiliation": "Independent Open-Source Researcher, THOR-SEC",
+      "orcid": "0009-0001-6573-385X"
+    }
+  ],
+  "description": "A metadata-only reference kernel and research paper for evidence-tiered analysis of indirect sensitive-data routes through logs, telemetry, memory artifacts, caches and integrations. Three nested evidence relations are searched under independent budgets; a returned witness is labeled by the strongest relation it satisfies; trace parentage is diagnostic only; and authenticated transformation claims never suppress a route. Includes the paper, LaTeX source, standard-library Python kernel, 171 tests, two separately coded oracles, eleven deliberate mutants, synthetic fixtures and a checksum manifest. Synthetic evaluation only; not a production DLP or detection system.",
+  "keywords": [
+    "Ghost Portal Cartographer",
+    "indirect data egress",
+    "evidence-tiered lineage",
+    "provenance",
+    "bounded graph search",
+    "observability",
+    "reproducible software"
+  ],
+  "license": "MIT",
+  "version": "1.0.0",
+  "related_identifiers": [
+    {
+      "identifier": "https://github.com/codethor0/ghost-portal-cartographer",
+      "relation": "isSupplementedBy",
+      "scheme": "url"
+    },
+    {
+      "identifier": "10.5281/zenodo.24239735",
+      "relation": "references",
+      "scheme": "doi"
+    }
+  ]
+}

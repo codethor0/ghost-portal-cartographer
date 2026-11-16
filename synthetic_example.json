@@ -1,0 +1,24 @@
+{
+  "description": "Synthetic metadata only. No credentials or real personal information.",
+  "nodes": [
+    {"id":"request_v1","domain":"application","surface":"application","coverage":"partial"},
+    {"id":"exception_log_v1","domain":"application","surface":"log","coverage":"complete"},
+    {"id":"collector_batch_v1","domain":"observability","surface":"telemetry","coverage":"partial"},
+    {"id":"vendor_archive_v1","domain":"external_vendor","surface":"external","coverage":"unknown"},
+    {"id":"memory_frame_v1","domain":"application","surface":"memory","coverage":"unknown"},
+    {"id":"cache_entry_v1","domain":"application","surface":"cache","coverage":"partial"},
+    {"id":"integration_export_v1","domain":"external_vendor","surface":"integration","coverage":"unknown"}
+  ],
+  "edges": [
+    {"id":"e1","src":"request_v1","dst":"exception_log_v1","mode":"observed","flow":"data","sequence":1,"evidence":"synthetic:event-1"},
+    {"id":"e2","src":"exception_log_v1","dst":"collector_batch_v1","mode":"observed","flow":"data","sequence":2,"evidence":"synthetic:event-2"},
+    {"id":"e3","src":"collector_batch_v1","dst":"vendor_archive_v1","mode":"observed","flow":"data","sequence":3,"evidence":"synthetic:event-3"},
+    {"id":"e4","src":"request_v1","dst":"memory_frame_v1","mode":"inferred","flow":"data"},
+    {"id":"e5","src":"memory_frame_v1","dst":"cache_entry_v1","mode":"inferred","flow":"unknown"},
+    {"id":"e6","src":"cache_entry_v1","dst":"integration_export_v1","mode":"inferred","flow":"unknown"}
+  ],
+  "policy": [
+    {"category":"CREDENTIAL","domain":"external_vendor","decision":"DENIED"}
+  ],
+  "query": {"source":"request_v1","destination_domain":"external_vendor","category":"CREDENTIAL"}
+}

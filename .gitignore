@@ -1,0 +1,31 @@
+# Local-only material
+private_review/
+*.zip
+*.har
+Pasted text*
+# Credentials and keys
+.env
+.env.*
+*.pem
+*.p12
+*.pfx
+*.key
+id_rsa*
+id_ed25519*
+# Python and LaTeX byproducts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+build/
+dist/
+*.aux
+*.log
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+# OS
+.DS_Store
+*.tmp

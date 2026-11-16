@@ -1,0 +1,28 @@
+cff-version: 1.2.0
+message: 'Please cite this Ghost Portal Cartographer research software and its Zenodo record.'
+title: 'Ghost Portal Cartographer: Evidence-Tiered Mapping of Indirect Sensitive-Data Egress'
+authors:
+  - family-names: Thor
+    given-names: Thor
+    orcid: 'https://orcid.org/0009-0001-6573-385X'
+    affiliation: 'Independent Open-Source Researcher, THOR-SEC'
+version: '1.0.0'
+doi: '10.5281/zenodo.24267416'
+date-released: '2026-11-15'
+type: software
+license: MIT
+repository-code: 'https://github.com/codethor0/ghost-portal-cartographer'
+identifiers:
+  - type: doi
+    value: '10.5281/zenodo.24267416'
+    description: 'Zenodo record for version 1.0.0'
+  - type: doi
+    value: '10.5281/zenodo.24267415'
+    description: 'Zenodo concept DOI for all versions'
+keywords:
+  - indirect data egress
+  - evidence-tiered lineage
+  - provenance
+  - bounded graph search
+  - observability
+  - reproducibility

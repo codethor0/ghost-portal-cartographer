@@ -1,0 +1,859 @@
+                                Ghost Portal Cartographer
+                      Evidence-Tiered Mapping of Indirect Sensitive-Data Egress
+
+                                                      Thor Thor
+                                 Independent Open-Source Researcher, THOR-SEC
+  ORCID 0009-0001-6573-385X         Repository https://github.com/codethor0/ghost-portal-cartographer
+
+  Independent research conducted on the author’s own time; not sponsored by or representative of an employer.
+                Research paper, November 2026. Not peer reviewed; open for technical challenge.
+
+
+                                                       Abstract
+          Sensitive information can cross a security boundary through logs, traces, memory artifacts, caches,
+      backups, and integrations even when the primary application response is protected. Ghost Portal
+      Cartographer (GPC) analyzes these indirect routes as a finite, declared artifact-version graph without
+      inspecting payload contents. Three independently bounded searches distinguish reported scalar-ordered
+      lineage, reported lineage with unresolved order, and possible data or unknown-content reachability. A
+      positive witness survives resource exhaustion in another search, and the selected witness is labeled by the
+      strongest relation it satisfies. Trace parentage remains unauthenticated context, not proof of transferred
+      data. A local HMAC demonstration authenticates declared transformation metadata, bound to the
+      artifacts and trust domains it describes, under a test policy; it cannot establish sanitization or exclude
+      a candidate route. The standard-library implementation was evaluated on synthetic graphs using 171
+      tests, two separately coded graph oracles, exhaustive small-graph cases, randomized comparisons, and
+      eleven detected deliberate mutations. These results support graph-relative search properties under
+      stated assumptions; they do not establish verified exfiltration, complete observation, formal verification,
+      or production readiness. Code, fixtures, and falsification conditions accompany the paper.
+
+Keywords: indirect data egress; evidence-tiered lineage; provenance; bounded graph search; observability; repro-
+ducibility.
+
+
+
+
+               Conceptual illustration of candidate artifact routes across an observation boundary; not an
+                                          empirical flow trace or a results figure.
+Ghost Portal Cartographer                                                                               Thor
+
+
+1. Problem and research question
+
+A protected response is not the end of a data lifecycle. Its contents may reappear in exception logs,
+distributed-trace attributes, diagnostic memory snapshots, application caches, and configured exports.
+OWASP advises against exposing secrets in logs, and OpenTelemetry documents the risk of capturing
+private values in telemetry [1, 2]. MITRE separately records weaknesses involving sensitive logs and cached
+information [4, 5], and a 2026 empirical study of Android application logs reports private information
+written to logs in practice [17]. These mechanisms differ operationally, but each can create another artifact
+outside the original control boundary.
+A dependency diagram alone cannot establish what moved. A shared trace ID is not an artifact-derivation
+record. An enabled exporter is not proof of transmission. Missing telemetry is not proof of safety. Any
+useful analysis must separate artifact identity, reported evidence, order, provenance, inventory coverage,
+and policy before it assigns a result.
+Research question. Can an auditable, metadata-only graph procedure retain reported paths and expose
+what remains unknown, without reading sensitive payloads or treating missing observations as proof that
+no route exists?
+Table 1 lists the surfaces considered here.
+Scope. The result is a tested decision procedure for a supplied finite graph. It is not a runtime collector,
+a data-loss prevention product, a cryptographic provenance system, a content-aware taint engine, or proof
+that a deleted artifact was purged. An edge labeled observed remains a claim supplied by an input source.
+
+2. Contributions and relationship to prior work
+
+GPC separates three questions that are often collapsed into one alert: Does a possible route exist? Is that
+route backed by reported artifact relationships? Do the reported scalar sequences admit a strict order?
+Three independently budgeted searches answer those questions while retaining stronger positive witnesses,
+even if a broader search hits a cap. The output also records path-specific policy, declared coverage gaps,
+and diagnostic provenance claims. Predecessor pointers bound path-storage costs. The contribution is
+the combination of these decision semantics and an executable test artifact, not a claim to have invented
+graph search, cryptographic authentication, or dynamic taint analysis.
+Prior systems address important parts of this problem. W3C PROV-DM defines a provenance vocabulary;
+CamFlow records system-wide provenance; TaintDroid follows information flow at runtime; OpenLineage
+standardizes lineage events for data workflows [6, 7, 8, 9]. GPC does not collect or authenticate their
+evidence. OWASP, OpenTelemetry, MITRE, and NIST describe the security risks of records and retained
+information [1, 2, 10]. RIFT studies pre-commit information-flow edge admission; GPC instead evaluates
+paths already declared in an input graph [11]. W3C Trace Context and OpenTelemetry provide context
+propagation, not proof that bytes crossed a boundary [12, 13]. The in-toto framework and DSSE distinguish
+authenticated statements from the truth of their contents [15, 16]. Lamport’s work explains why distributed
+order is not reducible to wall-clock time [14]. Provenance-based attack investigation is the closest technical
+community. Backtracking from a detection point through operating-system dependency graphs dates
+to King and Chen [18]; SPADE collects distributed provenance [19]; HOLMES correlates suspicious
+information flows into attack stages [20]; NoDoze and UNICORN rank or learn from provenance paths
+to reduce false alarms [21, 22]. NovaFabric records agent runs as signed evidence bundles whose lineage
+edges are marked as observed or inferred [27], a two-class distinction close to GPC’s mode field. Patent
+publications describe taint sets over provenance graphs built from audit records [28], lineage graphs
+with sensitive-element classification across streaming platforms [29], and time-ordered lineage for threat
+detection [30]. Those systems build and score graphs from collected events. GPC instead takes a declared
+graph as given and separates how strongly each returned route is supported, under explicit search budgets.
+
+                                                      2
+Ghost Portal Cartographer                                                                                   Thor
+
+
+The term declassification follows the information-flow literature [23, 24], where releasing information is
+characterized by what is released, by whom, where and when [25]. GPC deliberately gives a declassification
+claim no release effect at all: it is recorded and, when possible, authenticated, but never removes an edge.
+Bounded verification that reports an unknown outcome rather than safety when a bound is reached is
+established practice in model checking [26]; GPC applies that discipline to three nested relations searched
+independently. The present work is a reproducible systems synthesis whose value depends on the limits it
+makes visible, not an assertion that earlier approaches are inferior.
+
+3. Threat, trust, and observation boundary
+
+3.1 Protected artifacts, trust domains, and policy
+
+The query names a source artifact s, a declared sensitivity category c, and a destination trust domain
+d. GPC does not inspect bytes to confirm the category, and category does not change reachability. The
+independent policy function is A(c, d) ∈ {DENIED, PERMITTED, UNSPECIFIED}. An absent rule yields
+UNSPECIFIED, not implicit permission. Intermediate assessments describe only the returned witness path;
+they are not a regulatory or global authorization decision.
+A trust domain is an ownership, authority, or processing boundary rather than a geographic location.
+A reported path to a vendor domain is not itself proof that an unauthorized person viewed the content.
+Conversely, a supposedly internal destination can still be disallowed by policy.
+
+3.2 Adversaries and collection failures
+
+The adversary may influence instrumentation, metadata, or inventory. The relevant failures include copied
+secrets in logs, retained diagnostic artifacts, forged locators, reordered sequences, missing collectors, hidden
+destinations, and unrecorded historical copies. The kernel validates declared structure; it cannot verify
+that a malicious input describes reality. W3C trace context may originate beyond a trusted boundary [12].
+A fabricated edge can create a false route; an omitted edge can hide a real one. Those are limits of input
+trust, not defects that graph traversal alone can overcome.
+
+3.3 Data surfaces and evidence
+
+                    Table 1: Indirect-copy surfaces and the evidence question each leaves open.
+
+Surface              Candidate derived artifact                      Unresolved evidence question
+Logs                 Exceptions, URL or body fragments, serialized   Does the record actually contain the declared
+                     context                                         category?
+Telemetry       /    Exported spans, metrics, attributes, baggage    Does a shared ID indicate derivation or only
+traces                                                               correlation?
+Memory               Heap snapshot, dump, support bundle             Was it retained, transferred, or made
+                                                                     accessible?
+Caches               Browser, application, CDN, distributed cache    Did expiry or deletion remove every prior
+                     entry                                           copy?
+Integrations         Webhook payload, support upload, partner        Was the configured route actually invoked?
+                     export
+Backups         /    Object versions, copied logs, replicas          What historical or onward copies remain?
+archives
+
+
+
+
+                                                         3
+Ghost Portal Cartographer                                                                                       Thor
+
+
+4. Typed graph and three evidence tiers
+
+Definition 1 (Declared artifact-version graph). A finite directed graph G = (V, E) has unique artifact-
+version identifiers v ∈ V , each with declared domain dom(v), surface surf(v), inventory annotation
+cov(v) ∈ {complete, partial, unknown}, and an optional declared SHA-256 digest h(v). Neither a claimed
+complete inventory nor an input digest establishes that physical artifact bytes were checked.
+
+Definition 2 (Candidate lineage and transformation claims). An edge e = (id, u, v, m, f, σ, r, κ, τ, a)
+connects declared artifact versions.            Mode m ∈ {observed, inferred}, flow type f                ∈
+{data, unknown, control, declassified}, optional scalar sequence σ, and evidence locator r are input claims.
+Optional κ is a claimed predecessor edge ID; τ (e) = (traceID(e), spanID(e), parentSpanID(e)) comprises
+three optional trace/span identifiers; a carries a transformation claim. None of κ, τ, a, or a locator
+authenticates a collector.
+
+Define candidate relations conservatively:
+
+               EP = {e ∈ E : f (e) ∈ {data, unknown, declassified}},                                               (1)
+               ER = {e ∈ EP : m(e) = observed, f (e) ∈ {data, declassified}, nonblank(r(e))},                      (2)
+               EO = {e ∈ ER : σ(e) ̸= ⊥}.                                                                          (3)
+
+Thus EO ⊆ ER ⊆ EP . For an admissible query q = (s, c, d), d ̸= dom(s), predicate P(q) means there is
+a directed path in EP from s to a different vertex in domain d; R(q) means one exists in ER ; and O(q)
+additionally requires a path in EO whose edges satisfy
+
+                                           σ(e1 ) < σ(e2 ) < · · · < σ(ek ).                                       (4)
+
+A strictly increasing scalar sequence is a property of declared metadata, not authenticated distributed
+causality. R(q) does not require sequence order: missing, repeated, or inverted values can invalidate an
+ordered finding without discarding the reported graph path. Category c determines policy lookup and
+claim diagnostics; it does not verify payload content. Figure 1 shows the fixture used in Section 8.
+
+                                                                                      vendor domain
+
+                                         Exception               Telemetry              Vendor
+                               e1                        e2                      e3
+                                            log                    batch                archive
+
+                    Request
+                    artifact
+
+                                         Memory                    Cache              Integration
+                               e4                        e5                      e6
+                                         snapshot                  entry                export
+
+
+Figure 1: The fictional two-lane fixture. Both sinks are in the vendor trust domain. Solid lines encode input-reported
+data-derivation claims; dashed lines are inferred data or unknown-content relationships.
+
+
+
+5. Reported causal context and conservative declassification
+
+5.1 Context matching does not authenticate data transfer
+
+For consecutive reported path edges (ei , ei+1 ), define an optional claimed edge-parent match
+
+                                       Cclaim (ei , ei+1 ) ≡ [κ(ei+1 ) = id(ei )].                                 (5)
+
+                                                           4
+Ghost Portal Cartographer                                                                                 Thor
+
+
+For all three components of τ (e), ⊥ denotes absence. When supplied, trace IDs and span IDs are
+respectively 32 and 16 lowercase hexadecimal characters, and all-zero values, which W3C Trace Context
+defines as invalid, are rejected [12]; a parent span requires a declared trace and current span. These
+identifiers are the context-propagation fields of distributed tracing [3]. For consecutive reported edges, a
+claimed span-parent match is
+                       Sclaim (ei , ei+1 ) ≡ [κ(ei+1 ) = ⊥] ∧ [parentSpanID(ei+1 ) ̸= ⊥]
+                                          ∧ [traceID(ei ) = traceID(ei+1 ) ̸= ⊥]
+                                          ∧ [spanID(ei ) = parentSpanID(ei+1 ) ̸= ⊥].                       (6)
+The reference code evaluates the claimed edge-parent identifier first, if present, reporting
+MATCHED_UNAUTHENTICATED_PARENT or CONFLICTING_PARENT. Only when that identifier is absent does
+it evaluate a supplied parent-span identifier, reporting TRACE_PARENT_MATCH, TRACE_PARENT_MISMATCH,
+or UNSCOPED_TRACE if the preceding span or trace is absent. When neither parent field is present, it
+reports NO_PARENT_CLAIM. These are diagnostic annotations, not transition guards. In particular, Cclaim
+and Sclaim do not relax Equation (4) or upgrade REPORTED_ORDER_UNRESOLVED to REPORTED_ORDERED_LINEAGE. A forged
+identifier can satisfy either predicate, so neither authenticates sensitive-byte transfer [12, 13].
+Lemma 1 (Parentage has no admissibility effect). For consecutive reported edges ei , ei+1 on a candidate
+ordered route, neither claimed edge parentage Cclaim (ei , ei+1 ) nor claimed span parentage Sclaim (ei , ei+1 )
+changes admission to OrderedRoute. Admission depends only on membership in EO and σ(ei+1 ) > σ(ei ),
+with σ(e0 ) read as the start sentinel −1.
+
+Proof. The transition guard is Equation (4), and neither Equation (5) nor Equation (6) occurs in that
+guard or in the witness re-verification of Section 6. These annotations cannot upgrade an inverted or
+absent sequence to REPORTED_ORDERED_LINEAGE.
+
+5.2 HMAC demonstration authenticates statements, not sanitization
+A declassified edge may carry a bounded claim with attester and policy IDs, category, transform name,
+source/output declared digests, nonce, validity window, and MAC. For an in-process trust configuration T ,
+category c, and explicit verification epoch t, the demonstration reports metadata authentication only when
+             MT (e, c, t) ≡ MACValidT (a(e), e) ∧ AuthorizedT (attester, policy, c, transform)
+                            ∧ h(u) = a.sourceDigest ∧ h(v) = a.outputDigest
+                            ∧ a.issuedAt ≤ t ≤ a.expiresAt ∧ NonceFirstG (e).                               (7)
+For this local model MACValid means HMAC-SHA256 over deterministic JSON with a fixed domain-
+separation prefix, verified using constant-time tag comparison. The caller supplies a test trust mapping
+attestation_trust (attester_id to an in-process AttestationTrust record containing an HMAC key,
+policy ID, categories and transforms) and an explicit integer verification_epoch to the Cartographer
+constructor. Neither the key nor the trust mapping is accepted from graph JSON or returned in the
+result. Missing trust configuration produces UNVERIFIED_CLAIM with reason UNTRUSTED_ATTESTER; absent
+verification epoch is also unverified. This is a caller-controlled demonstration, not an operational key-
+distribution, rotation, revocation or custody system.
+Definition 3 (HMAC validity in the local demonstration). Let K be a test HMAC key selected
+from an in-process trust configuration T , let DSP be the fixed domain-separation prefix, let β(e) =
+(u, v, dom(u), dom(v)) be the source and output artifact versions of the edge carrying the claim together
+with their declared domains, and let canonical(a\{mac_hex}, β(e)) denote deterministic JSON serialization
+of the claim fields excluding its MAC field, extended with β(e). Define
+             MACValidT (a, e) ≡ ct-eq HMAC-SHA256K (
+                                                                                                           (8)
+                                      DSP ∥ canonical(a \ {mac_hex}, β(e))), a.mac_hex .
+
+                                                       5
+Ghost Portal Cartographer                                                                                 Thor
+
+
+Here ct-eq compares the computed hexadecimal tag using constant-time comparison. The code uses
+hmac.compare_digest and the literal prefix GPC-DECLASSIFICATION-HMAC-DEMO followed by a zero byte.
+Binding β(e) means a claim issued for one artifact pair cannot authenticate on an edge between different
+artifacts or across a different trust boundary, in the same spirit as the subject binding of an in-toto
+statement [15]. The tag is checked immediately after the attester lookup, before any field-specific reason is
+reported. This is symmetric message authentication.
+The predicate NonceFirstG (e) is scoped to one analyze invocation: after sorting declassified edges by edge
+ID, the first edge with an (attesterID, nonce) pair is assessed, and subsequent edges with that pair are
+marked DUPLICATE_NONCE_IN_GRAPH, even when the first claim fails a later validation. A fresh nonce set is
+used at every call. Thus replay across invocations, processes or archives is not detected; the demonstration
+does not persist anti-replay state. An authenticated claim binds supplied metadata relative to a test key.
+Declared digests are not independently measured against bytes; freshness is a caller-supplied epoch. This
+is not DSSE, an in-toto verifier, a public-key signature, a production trust system, or proof that an output
+no longer contains sensitive content [15, 16].
+Most importantly, even when Equation (7) holds, effective category-specific sanitization is not established.
+Therefore the executable kernel applies no declassification-based flow suppression:
+
+                               ∀e ∈ EP , ∀c,    ExcludeForClaim(e, c) = false.                              (9)
+
+For otherwise identical edge metadata, f (e) = declassified and f (e) = data have identical membership
+in EP , ER , and EO : a valid HMAC does not change route existence or the primary result. Only the
+separate claim-assessment diagnostics differ. The code reports AUTHENTICATED_METADATA_CLAIM or UNVERIFIED_CLAIM;
+missing claims, wrong MACs, expired validity, different categories, policy mismatch, incorrect declared
+digests, and repeated nonces cannot remove a candidate route. A syntactically malformed claim (for
+example a non-hexadecimal tag or an inverted validity window) is treated differently: the loader rejects
+the entire input with an error, so no partial result is produced. This fails closed, but it also means one
+malformed claim from any party prevents analysis until the input is corrected. Assessments cover every
+declassified edge in the supplied graph, not only edges on the selected witness. A future category-specific
+exclusion would additionally require a trustworthy semantic postcondition for the transformation and a
+model of other residual channels, neither supplied here. An individual IETF Internet-Draft discussing
+transformation evidence is relevant context, not an endorsed standard or proof of sanitization [31].
+Lemma 2 (Declassified edges behave as data for path existence). In the implemented model, an edge
+e with f (e) = declassified has identical membership in EP , ER , EO to an otherwise identical edge e′ with
+f (e′ ) = data.
+
+Proof. Equation (1) admits both flow types; Equation (2) admits both when the mode and locator require-
+ments hold; and Equation (3) adds only a scalar-sequence filter. Equation (9) rules out authentication-
+dependent edge exclusion. The resulting path-existence predicates are identical, although diagnostic
+metadata may differ.
+
+6. Independent bounded searches and decision semantics
+
+GPC runs three independent breadth-first searches: OrderedRoute on EO with state (v, σlast ) and
+Equation (4); ReportedRoute on ER with vertex state; and PossibleRoute on EP with vertex state.
+All use parent pointers π(x) = (xparent , edge_id) to reconstruct a witness once after success, rather than
+copying path tuples at every expansion. OrderedRoute must not merge states solely by vertex because
+their future admissible sequences differ.
+Each search is independently capped at a positive integer b of dequeued states. The result contains a
+witness if one was found, resolution and exhaustion flags, the limit flag, popped and discovered counts,
+
+                                                       6
+Ghost Portal Cartographer                                                                                    Thor
+
+
+and coverage gaps on visited vertices. A found path proves existence within its declared relation even if
+additional queued states remain. A limit reached without a path says only that exploration was incomplete.
+The selector takes the first returned witness in the order ordered, reported, possible, and then re-verifies
+that one path against the stronger predicates: edge eligibility and, for the ordered tier, Equation (4)
+on its own edges. A reported-search witness whose sequences already increase strictly therefore receives
+REPORTED_ORDERED_LINEAGE, even if the ordered search reached its cap first; the result records witness_source
+and witness_reclassified. Re-verification inspects only the returned edges and never consults parentage
+or claims. If no witness was returned and the possible search finished, the result is NO_ROUTE_IN_DECLARED_GRAPH
+even when a narrower search was capped, because by Proposition 1 no narrower route can exist. Figure 2
+summarizes the procedure, and Tables 2 and 3 list the outputs.
+
+GPC(query, b):
+    require destination_domain != domain(source); require b >= 1
+    ordered = BFS_ordered(E_O, source, destination, b)
+    reported = BFS_vertex(E_R, source, destination, b)
+    possible = BFS_vertex(E_P, source, destination, b)
+    # Each search carries its own LIMIT and actual popped count.
+    path = first of ordered.path, reported.path, possible.path, or empty
+    if path:   status = strongest tier whose predicate path satisfies
+                        (ORDERED_LINEAGE > ORDER_UNRESOLVED > POSSIBLE_ROUTE)
+    else if possible.exhaustive: status = NO_ROUTE_IN_DECLARED_GRAPH
+    else if any(LIMIT):           status = UNKNOWN_LIMIT
+    else:                         status = NO_ROUTE_IN_DECLARED_GRAPH
+    policy = explicit_policy(category, destination_domain)
+    hops = policies_for_each_selected_path_vertex(path)
+    coverage = union_of_gaps_at_popped_vertices()
+    causal = unauthenticated_context_annotations(path)
+    declass = assess_metadata_MAC_claims_without_edge_removal()
+    order_issues = sequence_issues(path) if status == REPORTED_ORDER_UNRESOLVED
+    return status, ordered, reported, possible, path, witness_source,
+           policy, hops, coverage, examined_counts,
+           order_issues, causal, declass, provenance_trust=unauthenticated
+
+
+Figure 2: Abbreviated implementation semantics. A budget-limited broader search cannot erase a narrower positive
+witness. The full result is composite, not a single loss-prone flag.
+
+
+Table 2: Primary result interpretation; individual search outcomes and destination policy remain separately
+accessible.
+
+Primary status                       Permitted inference
+REPORTED_ORDERED_LINEAGE            The selected reference-backed reported witness satisfies the input scalar order.
+                                    No authenticated causal or payload proof.
+REPORTED_ORDER_UNRESOLVED           A reported reference-backed witness exists and itself fails strict order
+                                    (missing, equal, or decreasing values); no ordered witness was returned,
+                                    possibly because the ordered search was capped.
+POSSIBLE_ROUTE                      A data-or-unknown-content path exists in the supplied graph; stronger
+                                    reported results may be absent or budget-unresolved.
+NO_ROUTE_IN_DECLARED_GRAPH          The possible search finished without a witness; by containment no reported
+                                    or ordered route exists either. A finite-input statement, never a real-world
+                                    safety certificate.
+UNKNOWN_LIMIT                       No witness was returned and the possible search was capped. Negative
+                                    conclusions must be withheld.
+
+Policy and coverage. The destination rule A(c, d) is returned even if no path exists. For the selected
+
+                                                       7
+Ghost Portal Cartographer                                                                                Thor
+
+
+Table 3: Secondary diagnostics are separate from the primary finding; missing entries do not prove trustworthy
+observation.
+
+Category               Reported diagnostic values
+Order                  MISSING_SEQUENCE, NON_INCREASING_SEQUENCE, computed on the selected witness when
+                       the status is REPORTED_ORDER_UNRESOLVED; empty for every other status.
+Parent context         NO_PARENT_CLAIM, MATCHED_UNAUTHENTICATED_PARENT, CONFLICTING_PARENT,
+                       UNSCOPED_TRACE, TRACE_PARENT_MATCH, TRACE_PARENT_MISMATCH. All are
+                       unauthenticated.
+Transformation         AUTHENTICATED_METADATA_CLAIM or UNVERIFIED_CLAIM, accompanied by a reason and
+                       edge_suppressed=false, for every declassified edge in the graph. No status proves
+                       sanitization.
+Selection              witness_source (search that returned the path) and witness_reclassified (path
+                       satisfied a stronger predicate than its search).
+
+
+path (e1 , . . . , ek ), each destination vertex receives its declared-domain policy value. The path annota-
+tion is CONTAINS_DENIED if any hop is denied; otherwise UNSPECIFIED if a hop has no rule; otherwise
+ALL_PERMITTED; no path yields NO_PATH. These are annotations for one witness, not a global property of
+every route or proof of access control. Coverage reports, in the field declared_coverage_gap_nodes, list
+visited vertices whose declared coverage is partial or unknown; a self-described complete inventory is not
+trusted as an audited fact.
+
+7. Mathematical properties and complexity
+
+Proposition 1 (Tier containment). For every well-formed fixed input graph and admissible query,
+O(q) ⇒ R(q) ⇒ P(q).
+
+Proof. Every ordered route is a path in EO ⊆ ER , and every path in ER is a path in EP . All three
+predicates use the same source and destination-domain condition, and removing the order constraint
+cannot invalidate existence.
+
+Scope note (relation versus algorithm). Proposition 1 is a relation-level implication: O(q) ⇒ R(q) ⇒
+P(q) is true independently of budgets. Preserving an already returned witness when a different search
+reaches its cap is an algorithm-level property, proved separately by Proposition 2.
+
+Proposition 2 (Priority preservation under independent limits). If any search returns a positive witness,
+no limit flag from a different search can cause the primary result to be UNKNOWN_LIMIT. An ordered positive
+witness is always selected ahead of a reported positive witness, which is selected ahead of a possible positive
+witness.
+
+Proof. The selector first inspects the three positive path fields in priority order and only inspects cap flags
+when all fields are empty. Independent cap status therefore cannot replace a previously returned witness.
+The claim does not say a missing witness in a capped search is absent.
+
+Corollary 1 (Strongest-tier labeling of the selected witness). The primary status is the strongest of
+O, R, P whose predicate the selected witness itself satisfies, and it is never weaker than the relation of the
+search that returned that witness.
+
+Proof. By Proposition 1 applied to the witness edges, a path satisfying O also satisfies R and P, so the
+tiers are nested and “strongest satisfied” is well defined. The selector evaluates the ordered predicate on
+the selected path first, then the reported predicate, then the possible predicate. A search returns only
+
+                                                      8
+Ghost Portal Cartographer                                                                              Thor
+
+
+paths in its own relation, so the search relation is always satisfied. A capped search may still miss a
+stronger witness that exists elsewhere in the graph; no claim of budget-independent discovery is made.
+
+Corollary 2 (Decisive negative). If the possible search finishes without a witness, then ¬P(q), ¬R(q) and
+¬O(q) hold for the supplied graph, whatever the outcome of the other searches.
+
+Proof. Proposition 3 gives ¬P(q); the contrapositive of Proposition 1 gives the rest.
+
+Proposition 3 (Finite-graph exhaustive correctness). When a search resolves without a cap, PossibleR-
+oute decides P(q), ReportedRoute decides R(q), and OrderedRoute decides O(q) relative to the
+submitted graph.
+
+Proof. Vertex BFS visits every reachable vertex once and records a predecessor for each newly discovered
+state. The ordered explorer visits reachable pairs (v, σlast ), accepting exactly edges that satisfy the next
+strict inequality. Two ordered states with the same vertex and last sequence admit identical possible
+continuations, so deduplicating that pair is sound for existence. In a finite graph, exhaustion reaches all
+admissible states. A target is accepted only if its domain is the requested destination and it differs from
+the source. The ordered search explores walks; existence of an admissible walk and of an admissible path
+coincide, because removing a closed sub-walk leaves a subsequence of a strictly increasing sequence.
+
+Lemma 3 (Returned ordered witnesses are simple). A witness returned by OrderedRoute visits no
+vertex twice.
+
+Proof. Breadth-first search returns a minimum-hop admissible walk. If such a walk reached v first with
+last sequence σ1 and later left v by edge e with σ(e) > σ2 > σ1 , then e would already be admissible at the
+first visit, giving a strictly shorter admissible walk.
+
+Proposition 4 (Edge-addition monotonicity of path existence). With vertices, domains, query, and
+existing edge semantics fixed, adding admissible edges cannot remove an already existing P, R, or O route.
+
+Proof. All original route edges, metadata and sequence order remain available. The added edges enlarge the
+set of candidate routes without removing existing ones. This does not assert monotonicity of finite-budget
+discovery, witness selection, or the primary status under changes to search order or graph size.
+
+Proposition 5 (Conservative non-suppression). For fixed nodes and reported edges, adding, deleting,
+authenticating or invalidating well-formed transformation claims cannot remove an EP , ER , or EO path
+in the implemented model, provided edge types and graph topology themselves remain fixed. A syntactically
+malformed claim causes the whole input to be rejected rather than any path to be removed.
+
+Proof. Equations (1)–(3) depend on the declared graph edge type, mode, locator and scalar sequence, but
+not on Equation (7). Equation (9) prevents metadata-claim authentication from deleting an admissible
+edge. Therefore the three path-existence predicates are unaffected by a transformation-claim update. The
+proposition does not apply to changing an edge’s type, topology, locator, sequence, or historical state.
+
+Scope of Proposition 5. This is a deliberately narrow invariant of this executable kernel, not a general
+guarantee for attestation-based declassification. If a future system allowed verified transformations to
+exclude an edge, a claim update could change its graph membership and the proposition would require a
+new, status-conditioned statement and proof.
+
+Lemma 4 (Ordered state-space bound). Let EO contain the ordered-eligible edges and let OrderedRoute
+deduplicate states by (v, σlast ). The number of distinct reachable search states is at most |EO | + 1.
+
+
+                                                     9
+Ghost Portal Cartographer                                                                                 Thor
+
+
+Proof. The initial state is (s, −1). Every other reachable state is reached through some edge e ∈ EO and
+has the form (dst(e), σ(e)). Different edges may yield identical pairs, but deduplication adds a pair only
+once. There are at most |EO | non-initial pairs and the initial state.
+
+Complexity. Let n = |V |, m = |E|. Constructing adjacency lists and deterministic edge-ID ordering
+takes O(n + m log(m + 1)) time and O(n + m) memory. Each vertex-only BFS has O(n + m) time and
+O(n) auxiliary state on top of graph storage; parent reconstruction adds O(ℓ) for a witness of length ℓ ≤ m.
+Every ordered state after the start is uniquely determined by the destination vertex and sequence of a last
+eligible edge, so at most m + 1 such states exist. Re-scanning outgoing edges at different sequence states
+gives a conservative O(n + m2 ) time bound. Re-verifying the selected witness costs O(ℓ). The popped-state
+budget does not bound memory: discovered states enter the predecessor map before they are popped.
+Parent pointers and queues require O(n + m) graph-plus-search memory, rather than quadratic copied-path
+memory. Metadata-claim assessment additionally scans at most m edges, performing bounded-length MAC
+comparisons, and causal annotations scan the selected witness once. These are algorithmic worst-case
+bounds, not guarantees on interpreter allocation overhead, untrusted input sizes, cryptographic key custody,
+or telemetry throughput.
+
+8. Synthetic examples and adversarial counterexamples
+
+The synthetic fixture starts with a credential-labeled artifact, request_v1. Reported edges e1–e3 connect
+it through an exception log and a telemetry collector to a vendor artifact. Inferred edges e4–e6 pass
+through a memory snapshot and a cache before reaching an integration artifact. No artifact contains a
+real credential. The suffix _v1 identifies a fictional artifact version, not a manuscript release. Table 4 lists
+the statuses produced by four modifications of this fixture.
+
+Table 4: Reproduced primary statuses from modifications of the synthetic fixture. Destination policy remains
+DENIED.
+
+
+Input change                 Result                            Justification
+No modification              REPORTED_ORDERED_LINEAGE          e1–e2–e3 forms a declared ordered route.
+Delete e3                    POSSIBLE_ROUTE                    An inferred e4–e5–e6 route remains.
+Delete both e3 and e6        NO_ROUTE_IN_DECLARED_GRAPH        The model has no destination path; unmodeled
+                                                               routes remain possible.
+Change e3 sequence from 3    REPORTED_ORDER_UNRESOLVED         The reported edges still connect, but order is
+to 1                                                           non-increasing.
+
+
+8.1 Counterexample A: correlation is not derivation
+
+Two spans may share a trace ID without exchanging any versioned artifact. Naively connecting them
+yields a false path. GPC requires an explicit artifact-to-artifact edge, but remains vulnerable to an input
+source that falsely asserts one.
+
+8.2 Counterexample B: inverted or missing sequence metadata
+                                  5     4
+Consider reported data edges s −   →a−  → t. The strict ordered predicate fails, but R(q) holds: the result is
+REPORTED_ORDER_UNRESOLVED, and the selected witness carries a NON_INCREASING_SEQUENCE diagnostic. Missing
+sequences are similarly preserved as MISSING_SEQUENCE. Even if the second edge reports the first edge
+ID as its parent, that match is only an unauthenticated context annotation: the primary status remains
+REPORTED_ORDER_UNRESOLVED. No trace header validates payload carriage. A malicious collector may also omit
+the edges entirely.
+
+                                                          10
+Ghost Portal Cartographer                                                                             Thor
+
+
+8.3 Counterexample C: unrelated search exhaustion
+
+Suppose reported, strictly ordered edges s → a → t form a two-hop route. Also add many inferred
+branches from s into nondestination vertices. With a three-popped-state budget, the ordered and reported
+searches can find t, while the broader possible search reaches its cap before dequeuing t. The primary
+result remains REPORTED_ORDERED_LINEAGE; the separate possible outcome has limit_reached=true. In a
+regression with many parallel s → a edges of increasing sequence, the ordered search instead reaches its
+cap first while the reported search returns a path whose own sequences increase; re-verification labels that
+path REPORTED_ORDERED_LINEAGE with witness_source=reported. A deterministic regression includes 100,000
+reachable inferred branches. This prevents a budget limit from erasing an established witness; it does not
+prevent denial-of-service attacks against memory before the cap or against the input supply chain.
+
+8.4 Counterexample D: authenticated assertions do not establish sanitization
+
+A vendor labels an artifact “redacted” and attaches a metadata claim. A forged MAC, incorrect digest,
+wrong policy, or a valid claim copied onto an edge between other artifacts is reported as UNVERIFIED_CLAIM.
+A synthetic correct HMAC under a configured test identity can produce AUTHENTICATED_METADATA_CLAIM; this
+means only that those declared fields were authenticated relative to the local key. Both cases keep the
+declassified edge in all relevant route searches. Treating a verified claim as demonstrated content erasure
+would create an unsupported negative. Historical copies and other sensitive categories remain unproved.
+
+8.5 Counterexample E: deletion does not imply purging
+
+A cache entry disappears after a vendor forwarding event. Historical copies in telemetry archives, backups,
+and third-party systems may survive. The analyzed graph is a supplied snapshot and has no historical
+may-have-held state, deletion attestation, revocation enforcement, or physical purge proof.
+
+8.6 Counterexample F: missing collectors and forged evidence
+
+No graph search can discover an omitted connector or independently authenticate a locator string. An
+adversary controlling the input file can add, suppress, or relabel edges. The result remains conditional on
+input faithfulness; a no-route output must not be translated into an absence-of-egress claim.
+
+9. Reproducible validation and measured boundaries
+
+The kernel and tests require the Python standard library only. The suite of 171 test methods passed
+on CPython 3.9.6, 3.10, 3.11, 3.12, 3.13, 3.14 and 3.15.2 under macOS 27.2 on arm64 with network
+access denied. One method compares all three relations to a separately implemented DFS oracle on
+1,200 deterministic random graphs; another uses a raw-dictionary path enumerator, which does not
+import the kernel, on another 1,200 graphs. Both oracles were written by the author and encode the
+same predicates, so agreement tests the search, not the definitions. Two small-graph tests exhaustively
+enumerate 512 possible-edge graphs and 625 observation mappings. Three tests cover 1,000 fixed-seed
+edge additions across the possible, reported, and ordered relations. Another test checks 500 randomized
+independent-budget cases. An additional method compares both independent oracles on 400 randomized
+graphs with declared declassification edges, without granting them sanitization effects. This is bounded
+semantic comparison, not independent empirical ground truth.
+Eleven locally synthesized faulty variants were exercised in temporary directories: budget dominance over
+a positive finding, removal of the strict order check, state merging without sequence, unauthenticated
+parentage upgrading ordered lineage, dropping declassified edges from reachability, acceptance of empty
+evidence, re-verification without the order check, a non-decisive exhaustive negative, a claim tag without
+artifact binding, order diagnostics on the wrong path, and acceptance of all-zero trace identifiers. The
+
+                                                    11
+Ghost Portal Cartographer                                                                              Thor
+
+
+regression suite detected all eleven, as reported in MUTATION_RESULTS.json. This says nothing about
+mutants that were not tried or vulnerabilities not represented by the tests.
+Table 5: Illustrative synthetic timing and traced Python peak memory (graph creation plus query, one run per
+configuration; CPython 3.15.2, macOS arm64). Every configuration is a negative query that explores the full
+reachable graph; queries with an early witness stop sooner. See BENCHMARK_DATA.csv for all nine measurements.
+
+                            Shape    Vertices    Edges    Seconds     Peak KiB
+                            Line         1,002    1,000      0.0194        729.4
+                            Line         3,002    3,000      0.0612      2,360.1
+                            Star         3,002    3,000      0.0234      2,008.5
+                            Dense           62    3,660      0.0336      1,049.7
+                            Dense          122   14,520      0.1317      4,130.2
+
+Table 5 reports five of the nine configurations. The benchmark uses time.perf_counter and tracemalloc.
+Results depend on the interpreter, hardware, graph shape, instrumentation overhead, and execution
+environment. The table is not a production throughput benchmark and supplies no field precision,
+recall, coverage, confidence interval, or detection-latency estimate. External laboratory validation remains
+outstanding.
+
+10. Research limitations and potential falsifiers
+ 1. Metadata authenticity: observed, parent IDs and trace identifiers are input assertions.
+    Evidence strings have no trusted collector signatures, integrity chain or verified origin.
+    provenance_trust=unauthenticated is unconditional even when an HMAC verifies a separate trans-
+    formation claim.
+ 2. Causality: Strict scalar order can contradict distributed reality or be manipulated. Parent and
+    span identifiers are contextual correlations, not authenticated causal proof; trace ID shape checks
+    reject all-zero identifiers but are not comprehensive W3C Trace Context conformance validation.
+    REPORTED_ORDER_UNRESOLVED preserves a route hypothesis, not a confirmed chronology.
+ 3. Open-world uncertainty: Completeness is self-declared. No finite graph search proves absence of
+    unmodeled exporters, caches, replicas or vendors.
+ 4. Content uncertainty and declassification: Neither source category nor declared digests are
+    verified against raw bytes. Even successful HMAC checks authenticate only a statement in a local
+    demonstration; semantic sanitization, encryption, aggregation and masking cannot be certified. No
+    edge is suppressed.
+ 5. History and revocation: There is no retention-state transition model, deletion attestation, audit-
+    grade revocation or historical noninterference proof.
+ 6. Authorization: Category/domain rules omit principal, purpose, legal basis, time and contract. A
+    selected-path policy assessment does not evaluate all paths.
+ 7. Performance and resource attacks: Three searches incur overhead; ordered exploration has
+    quadratic worst-case time. Metadata volumes are input-unbounded beyond the search budget; build-
+    time memory must still be controlled upstream.
+ 8. Information channels: Side channels, inference from aggregates, model memorization and transient
+    device state are not analyzed.
+ 9. Observer privacy: Even abstract path metadata may expose system topology, processing relationships
+    and incident context; access controls and safe retention are outside this demonstration.
+10. Validation scope: Deterministic regression agreement, two algorithmic oracles, synthetic HMAC tests
+    and detected mutants do not constitute formal verification, unbiased ground truth, or independent
+    peer review. Demo MAC keys have no secure lifecycle, independent attester or production legitimacy.
+
+                                                     12
+Ghost Portal Cartographer                                                                               Thor
+
+
+The next experiment should use authorized synthetic canaries and independently recorded ground truth.
+It should vary clock skew, missing instrumentation, forwarding behavior, and retention while reporting
+missed transfers, false alerts, timing, and memory overhead. Stronger source authenticity and sanitization
+claims would require authenticated collection, verification against actual artifact bytes, and independent
+transformation tests.
+
+11. Conditions for falsification
+
+The claims above are deliberately narrow and admit concrete counterexamples. A reproducible fixed-graph
+instance where a complete search omits a route in its declared relation would falsify exhaustive search
+correctness. A case where a second capped search overwrites an established positive witness would falsify
+priority preservation. A case where matching parent metadata changes the ordered predicate despite
+unchanged scalar sequences would falsify the stated separation of correlation and order. A returned witness
+that satisfies a stronger predicate but is labeled with a weaker status, or a status stronger than its witness
+satisfies, would falsify Corollary 1. An exhaustive negative possible search reported as anything other than
+NO_ROUTE_IN_DECLARED_GRAPH would falsify Corollary 2. A transformation claim, verified or not, that causes any
+declassified edge to disappear from route eligibility would falsify conservative non-suppression. A successful
+metadata-MAC check for a changed payload, a different artifact pair or domain, mismatched policy,
+category, declared digest, duplicate nonce, or expired demonstration epoch would falsify the implemented
+verification conditions. These are executable kernel-level falsifiers, not claims that can be proved by
+counting tests alone.
+Deployment-level falsifiers include unauthorized local metadata authentication, while cross-run replay and
+independent artifact-byte checking remain unimplemented evaluation requirements. Deployment-level
+falsification must separate the tested local checker from unimplemented production controls. In this
+local model, accepting an unknown attester or an unauthorized policy, wrong category, altered MAC,
+mismatched declared digest or invalid supplied epoch as AUTHENTICATED_METADATA_CLAIM would falsify
+its documented checks. Reuse of the same nonce across separate analyses, compromise or rotation of a key,
+and a mismatch between declared digests and actual artifact bytes are currently undetectable by design;
+any future claim of cross-run replay protection, key lifecycle assurance or byte verification would require
+new implementation and independent tests. No valid MAC, including one from a trusted test attester,
+establishes that the transformation removed sensitive content.
+For real-world validation, an independent authorized laboratory must capture ground-truth artifact
+movement (including retained copies and hidden channels) while varying exporters, failed collectors, clock
+skew, and transformations. Missed movement would falsify any proposed production detection claim;
+such a claim is not made here. All inputs and claimed artifact digests in this paper remain synthetic and
+self-declared.
+
+12. Future directions and conclusion
+
+Next work should establish authenticated provenance without confusing span parentage with artifact
+derivation; measure category-specific transformation outcomes before considering any flow exclusion; model
+historical copies and retention transitions; and compare GPC against provenance, DLP, and taint systems
+using authorized canaries. A small machine-checked transition model would strengthen the mathematical
+basis. None of these capabilities is present in the current kernel.
+GPC is built around a limited but consequential rule: report what the graph can establish, and no more.
+Reachability does not establish chronology; chronology does not establish provenance; authentication of a
+metadata statement does not establish that sensitive bytes were removed. The implementation preserves
+discovered paths across order anomalies and independent search limits, records path-specific policy and
+
+
+                                                     13
+Ghost Portal Cartographer                                                                                Thor
+
+
+trust gaps, and leaves unresolved conditions explicit. It is an instrument for investigation and replication,
+not evidence that a particular organization leaked data or that an unobserved environment is safe.
+
+Reproducibility, attribution, and disclosure
+
+The research archive includes executable Python, the manuscript source, two separately coded graph
+oracles, synthetic fixtures, regression tests, benchmark data, mutation scripts, and integrity manifests.
+Every example uses fictional identifiers. The work reports neither a real security incident nor a verified
+transfer of sensitive bytes. The work has not been independently peer reviewed. Counterexamples and
+independent reproduction are invited. Author: Thor Thor, ORCID 0009-0001-6573-385X.
+Ethics. All experiments use synthetic metadata. No system was probed, no personal data was processed,
+and no real credentials were used.
+
+References
+ [1] OWASP Foundation. “Logging Cheat Sheet.”
+     https://cheatsheetseries.owasp.org/cheatsheets/Logging_Cheat_Sheet.html. Accessed 15 November
+     2026.
+
+ [2] OpenTelemetry. “Handling sensitive data.”
+     https://opentelemetry.io/docs/security/handling-sensitive-data/. Accessed 15 November 2026.
+
+ [3] OpenTelemetry. “Context propagation.”
+     https://opentelemetry.io/docs/concepts/context-propagation/. Accessed 15 November 2026.
+
+ [4] MITRE. “CWE-532: Insertion of Sensitive Information into Log File.”
+     https://cwe.mitre.org/data/definitions/532. Accessed 15 November 2026.
+
+ [5] MITRE. “CWE-524: Use of Cache Containing Sensitive Information.”
+     https://cwe.mitre.org/data/definitions/524. Accessed 15 November 2026.
+
+ [6] W3C. “PROV-DM: The PROV Data Model.” W3C Recommendation, 30 April 2013.
+     https://www.w3.org/TR/prov-dm/.
+
+ [7] Pasquier, T., Han, X., Goldstein, M., et al. “Practical Whole-System Provenance Capture.” ACM Symposium
+     on Cloud Computing, 2017. DOI: https://doi.org/10.1145/3127479.3129249.
+
+ [8] Enck, W., Gilbert, P., Chun, B.-G., et al. “TaintDroid: An Information-Flow Tracking System for Realtime
+     Privacy Monitoring on Smartphones.” OSDI, 2010. https://www.usenix.org/conference/osdi10/
+     taintdroid-information-flow-tracking-system-realtime-privacy-monitoring.
+
+ [9] OpenLineage. “OpenLineage Specification.”
+     https://github.com/OpenLineage/OpenLineage/blob/main/spec/OpenLineage.md. Accessed 15
+     November 2026.
+
+[10] Kent, K., and Souppaya, M. “Guide to Computer Security Log Management.” NIST SP 800-92, 2006. DOI:
+     https://doi.org/10.6028/NIST.SP.800-92.
+
+[11] Thor, T. “RIFT: Reach-Invariant Firewall for Trust - An Executable Static Kernel for Pre-Commit
+     Information-Flow Certification.” Zenodo, 2026. DOI: https://doi.org/10.5281/zenodo.24239735.
+
+[12] W3C. “Trace Context.” W3C Recommendation. https://www.w3.org/TR/trace-context/. Accessed 15
+     November 2026.
+
+[13] OpenTelemetry. “Tracing API.” https://opentelemetry.io/docs/specs/otel/trace/api/. Accessed 15
+     November 2026.
+
+
+                                                     14
+Ghost Portal Cartographer                                                                                  Thor
+
+
+[14] Lamport, L. “Time, Clocks, and the Ordering of Events in a Distributed System.” Communications of the
+     ACM 21(7), 1978, pp. 558–565. DOI: https://doi.org/10.1145/359545.359563.
+
+[15] in-toto. “Attestation Framework: Statement and Envelope Specifications.”
+     https://github.com/in-toto/attestation. Accessed 15 November 2026.
+
+[16] Secure Systems Lab. “Dead Simple Signing Envelope (DSSE).”
+     https://github.com/secure-systems-lab/dsse. Accessed 15 November 2026.
+
+[17] Chen, Z., Deo, S. S., Puttaparthi, P. C. R., Nava-Camal, V., Tang, Y., Zhang, X., and Shang, W. “Is Your
+     Private Information Logged? An Empirical Study on Android App Logs.” arXiv:2602.07893, 2026.
+
+[18] King, S. T., and Chen, P. M. “Backtracking Intrusions.” ACM Symposium on Operating Systems Principles
+     (SOSP), 2003.
+
+[19] Gehani, A., and Tariq, D. “SPADE: Support for Provenance Auditing in Distributed Environments.”
+     ACM/IFIP/USENIX Middleware, 2012.
+
+[20] Milajerdi, S. M., Gjomemo, R., Eshete, B., Sekar, R., and Venkatakrishnan, V. N. “HOLMES: Real-Time APT
+     Detection through Correlation of Suspicious Information Flows.” IEEE Symposium on Security and Privacy,
+     2019.
+
+[21] Hassan, W. U., Guo, S., Li, D., Chen, Z., Jee, K., Li, Z., and Bates, A. “NoDoze: Combatting Threat Alert
+     Fatigue with Automated Provenance Triage.” NDSS, 2019.
+
+[22] Han, X., Pasquier, T., Bates, A., Mickens, J., and Seltzer, M. “UNICORN: Runtime Provenance-Based
+     Detector for Advanced Persistent Threats.” NDSS, 2020.
+
+[23] Denning, D. E. “A Lattice Model of Secure Information Flow.” Communications of the ACM 19(5), 1976, pp.
+     236–243.
+
+[24] Sabelfeld, A., and Myers, A. C. “Language-Based Information-Flow Security.” IEEE Journal on Selected Areas
+     in Communications 21(1), 2003, pp. 5–19.
+
+[25] Sabelfeld, A., and Sands, D. “Declassification: Dimensions and Principles.” Journal of Computer Security
+     17(5), 2009, pp. 517–548.
+
+[26] Biere, A., Cimatti, A., Clarke, E., and Zhu, Y. “Symbolic Model Checking without BDDs.” TACAS, LNCS
+     1579, 1999, pp. 193–207.
+
+[27] Seyedkazemi Ardebili, M. “NovaFabric: Tamper-Evident, Replayable Evidence for Autonomous AI Agent
+     Runs.” arXiv:2609.12582, 2026.
+
+[28] Gehani, A., Porras, P. A., Yegneswaran, V., and Irshad, H. “Sensitive Dataflow Tracking System and Method.”
+     US Patent Application Publication US 2023/0289460 A1, 2023.
+
+[29] Pore, A., Bhargav, P., Mavromatis, A., Jennings, A., and Rawlings, M. “System and Method for Tracing Data
+     Streamed Across Different Platforms and Identifying Data Manipulations Performed Across Different
+     Platforms.” US Patent 12,443,507 B2, 2025.
+
+[30] Bin Noon, H. A., Barak, E. Y., and Schwartz, Y. “Techniques for Securing Data via Data Lineage.” US Patent
+     Application Publication US 2026/0129068 A1, 2026.
+
+[31] Doğru, E. C. “Transformation Evidence and Coverage Reconciliation for Auditable Data Disclosure.” Individual
+     IETF Internet-Draft draft-dogru-scitt-disclosure-evidence-07, 23 August 2026. Not an IETF standard.
+     https://datatracker.ietf.org/doc/html/draft-dogru-scitt-disclosure-evidence-07.
+
+
+
+
+                                                       15
+Ghost Portal Cartographer                                                                                Thor
+
+
+A. Exact reproduction commands
+
+# From the extracted source directory, using Python 3.9+:
+python -m unittest -v test_gpc.py
+python run_demo.py
+python mutation_check.py
+python benchmark.py
+# Verify SOURCE_HASHES.sha256 inside the archive and
+# SHA256SUMS.txt shipped next to the archive.
+
+
+Reported results were produced on CPython 3.9.6 to 3.15.2 (macOS 27.2, arm64). The metadata-MAC
+example uses only synthetic test keys; no live artifacts, attestation infrastructure, or secret-bearing network
+operations were involved. run_demo.py prints the complete, nested JSON result rather than an abridged
+status triplet. The mutation runner modifies only isolated temporary copies; it does not edit the canonical
+source.
+Fixture note. The supplied synthetic_example.json contains the complete synthetic edge records,
+including evidence locators. Optional parent, trace and transformation fields are diagnostics only, not
+authenticated chains of custody or proof of content movement.
+
+
+
+
+                                                      16
+
